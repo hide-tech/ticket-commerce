@@ -2,11 +2,10 @@ package com.yazykov.ticketservice.mapper;
 
 import com.yazykov.ticketservice.dto.SeatDto;
 import com.yazykov.ticketservice.model.Seat;
-import org.mapstruct.Mapper;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public abstract class SeatMapper {
-
+@Component
+public class SeatMapper {
     public SeatDto seatToSeatDto(Seat seat) {
         return new SeatDto(
                 seat.getId(),

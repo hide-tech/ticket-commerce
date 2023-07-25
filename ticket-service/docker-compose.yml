@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  ticket-service:
+    depends_on:
+    - ticket-postgres
+    image: "docker.io/library/ticket-service:latest"
+    container_name: "ticket-service"
+    ports:
+      - 9001:9001
+      - 8001:8001
+    environment:
+      - BPL_JVM_THREAD_COUNT=50
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ticket-postgres:5432/ticket_db
+      - BPL_DEBUG_ENABLED=true
+      - BPL_DEBUG_PORT=8001
+  ticket-postgres:
+    image: "postgres:14.4"
+    container_name: "ticket-postgres"
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=ticket_db
