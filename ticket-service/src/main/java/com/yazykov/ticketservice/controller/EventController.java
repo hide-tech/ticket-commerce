@@ -20,6 +20,11 @@ public class EventController {
         return "Welcome at our ticket service";
     }
 
+    @GetMapping("/events/all")
+    public ResponseEntity<List<EventDto>> getAllEvents() {
+        return ResponseEntity.ok(eventService.getAll());
+    }
+
     @GetMapping("/events")
     public ResponseEntity<List<EventDto>> getAllEventsByDateTimeAndType(@RequestParam("dateTime") String dateTime,
                                                                         @RequestParam("type") EventType type) {

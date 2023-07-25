@@ -9,6 +9,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.MappedCollection;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -18,18 +21,27 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table("events")
 public class Event {
     @Id
+    @Column("id")
     private Long id;
+    @Column("name")
     private String name;
+    @Column("type")
     private EventType type;
+    @Column("date_time")
     private LocalDateTime dateTime;
+    @MappedCollection(idColumn = "event_id")
     private Set<Seat> seats;
     @Version
+    @Column("version")
     private int version;
     @CreatedDate
+    @Column("created_date")
     private Instant createdDate;
     @LastModifiedDate
+    @Column("last_modified_date")
     private Instant lastModifiedDate;
 
     public Event(EventDto eventDto) {

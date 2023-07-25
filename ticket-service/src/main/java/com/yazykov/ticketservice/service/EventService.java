@@ -24,6 +24,19 @@ public class EventService {
     private final SeatService seatService;
     private final SeatMapper seatMapper;
 
+    public List<EventDto> getAll() {
+        return eventRepository.findAll().stream().map(event -> {
+            return new EventDto(
+                    event.getName(),
+                    event.getType(),
+                    event.getDateTime(),
+                    event.getSeats().stream().map(seatMapper::seatToSeatDto).collect(Collectors.toSet()),
+                    event.getCreatedDate(),
+                    event.getLastModifiedDate()
+            );
+        }).collect(Collectors.toList());
+    }
+
     public List<EventDto> getAllEvents(String dateTime, EventType type) {
         LocalDateTime instant = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm"));
         List<EventDto> eventDtos = eventRepository.findAllByDateTime(instant)

@@ -3,7 +3,7 @@ services:
   ticket-service:
     depends_on:
     - ticket-postgres
-    image: "docker.io/library/ticket-service:latest"
+    image: "ghcr.io/hide-tech/ticket-service:latest"
     container_name: "ticket-service"
     ports:
       - 9001:9001
