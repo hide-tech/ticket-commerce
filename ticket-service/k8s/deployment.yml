@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ticket-service
+  labels:
+    app: ticket-service
+spec:
+  selector:
+    matchLabels:
+      app: ticket-service
+  template:
+    metadata:
+      labels:
+        app: ticket-service
+    spec:
+      containers:
+      - name: ticket-service
+        image: ghcr.io/hide-tech/ticket-service
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9001
+        env:
+        - name: BPL_JVM_THREAD_COUNT
+          value: "50"
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://ticket-postgres:5432/ticket_db
+        - name: SPRING_PROFILES_ACTIVE
+          value: testdata
