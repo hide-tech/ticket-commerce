@@ -1,5 +1,6 @@
 package com.yazykov.ticketservice.controller;
 
+import com.yazykov.ticketservice.config.TicketProperties;
 import com.yazykov.ticketservice.dto.EventDto;
 import com.yazykov.ticketservice.model.EventType;
 import com.yazykov.ticketservice.service.EventService;
@@ -14,10 +15,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
+    private final TicketProperties ticketProperties;
 
     @GetMapping("/")
     public String greeting() {
-        return "Welcome at our ticket service";
+        return ticketProperties.getGreeting();
     }
 
     @GetMapping("/events/all")
@@ -27,8 +29,8 @@ public class EventController {
 
     @GetMapping("/events")
     public ResponseEntity<List<EventDto>> getAllEventsByDateTimeAndType(@RequestParam("dateTime") String dateTime,
-                                                                        @RequestParam("type") EventType type) {
-        return ResponseEntity.of(Optional.ofNullable(eventService.getAllEvents(dateTime, type)));
+                                                                        @RequestParam(name = "type", required = false) EventType type) {
+        return ResponseEntity.ok(eventService.getAllEvents(dateTime, type));
     }
 
     @PostMapping("/events")

@@ -8,3 +8,7 @@ spring:
     maximum-pool-size: 5
 server:
   port: 9001
+application:
+  name: ticket-service
+ticket:
+  greeting: Hello on our new ticket service!

@@ -18,7 +18,6 @@ public record EventDto(
         @NotBlank(message = "Type of event must be defined")
         EventType type,
         @NotBlank(message = "Date and time must be defined")
-        @DateTimeFormat(pattern = "dd.MM.yyyy-HH:mm")
         LocalDateTime dateTime,
         Set<SeatDto> seats,
         Instant createdDate,

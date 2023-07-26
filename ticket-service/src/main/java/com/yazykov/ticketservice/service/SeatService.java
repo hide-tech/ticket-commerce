@@ -37,7 +37,6 @@ public class SeatService {
         seats.add(new Seat(null, "VIP", "1", "1", SeatType.VIP, SeatState.FREE, new BigDecimal("25"),event));
         seats.add(new Seat(null, "VIP", "1", "2", SeatType.VIP, SeatState.FREE, new BigDecimal("25"),event));
         seats.add(new Seat(null, "VIP", "1", "3", SeatType.VIP, SeatState.FREE, new BigDecimal("25"),event));
-        seatRepository.saveAll(seats);
         return seats;
     }
 

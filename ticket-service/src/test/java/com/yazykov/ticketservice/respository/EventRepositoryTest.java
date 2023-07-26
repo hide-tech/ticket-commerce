@@ -3,6 +3,7 @@ package com.yazykov.ticketservice.respository;
 import com.yazykov.ticketservice.config.DataConfig;
 import com.yazykov.ticketservice.model.*;
 import com.yazykov.ticketservice.repository.EventRepository;
+import com.yazykov.ticketservice.repository.SeatRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,24 +12,25 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @DataJdbcTest
 @Import(DataConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("integration")
-//@Sql(scripts = "/db/migration/V1__init_schema.sql")
 public class EventRepositoryTest {
 
     @Autowired
     private EventRepository eventRepository;
+    @Autowired
+    private SeatRepository seatRepository;
     @Autowired
     private JdbcAggregateTemplate jdbcAggregateTemplate;
 
@@ -46,6 +48,21 @@ public class EventRepositoryTest {
         initEvents();
         List<Event> result = eventRepository.findAll();
         Assertions.assertEquals(3, result.size());
+    }
+
+    @Test
+    void findById() {
+        initEvents();
+        Optional<Event> byId = eventRepository.findById(3L);
+        Assertions.assertEquals("Football match", byId.get().getName());
+    }
+
+    @Test
+    void deleteById() {
+        initEvents();
+        seatRepository.deleteSeatsByEventId(2L);
+        eventRepository.deleteById(2L);
+        Assertions.assertTrue(eventRepository.findById(2L).isEmpty());
     }
 
     private void initEvents() {
@@ -68,18 +85,18 @@ public class EventRepositoryTest {
 
     private Set<Seat> initSeats() {
         Set<Seat> seats = new HashSet<>();
-        seats.add(new Seat(null, "A", "1", "1", SeatType.TYPE_A, SeatState.FREE, new BigDecimal("15"),null));
-        seats.add(new Seat(null, "B", "1", "1", SeatType.TYPE_A, SeatState.FREE, new BigDecimal("15"),null));
-        seats.add(new Seat(null, "C", "1", "1", SeatType.TYPE_A, SeatState.FREE, new BigDecimal("15"),null));
-        seats.add(new Seat(null, "A", "2", "1", SeatType.TYPE_B, SeatState.FREE, new BigDecimal("12"),null));
-        seats.add(new Seat(null, "B", "2", "1", SeatType.TYPE_B, SeatState.FREE, new BigDecimal("12"),null));
-        seats.add(new Seat(null, "C", "2", "1", SeatType.TYPE_B, SeatState.FREE, new BigDecimal("12"),null));
-        seats.add(new Seat(null, "A", "3", "1", SeatType.TYPE_C, SeatState.FREE, new BigDecimal("10"),null));
-        seats.add(new Seat(null, "B", "3", "1", SeatType.TYPE_C, SeatState.FREE, new BigDecimal("10"),null));
-        seats.add(new Seat(null, "C", "3", "1", SeatType.TYPE_C, SeatState.FREE, new BigDecimal("10"),null));
-        seats.add(new Seat(null, "VIP", "1", "1", SeatType.VIP, SeatState.FREE, new BigDecimal("25"),null));
-        seats.add(new Seat(null, "VIP", "1", "2", SeatType.VIP, SeatState.FREE, new BigDecimal("25"),null));
-        seats.add(new Seat(null, "VIP", "1", "3", SeatType.VIP, SeatState.FREE, new BigDecimal("25"),null));
+        seats.add(new Seat(null, "A", "1", "1", SeatType.TYPE_A, SeatState.FREE, new BigDecimal("15"), null));
+        seats.add(new Seat(null, "B", "1", "1", SeatType.TYPE_A, SeatState.FREE, new BigDecimal("15"), null));
+        seats.add(new Seat(null, "C", "1", "1", SeatType.TYPE_A, SeatState.FREE, new BigDecimal("15"), null));
+        seats.add(new Seat(null, "A", "2", "1", SeatType.TYPE_B, SeatState.FREE, new BigDecimal("12"), null));
+        seats.add(new Seat(null, "B", "2", "1", SeatType.TYPE_B, SeatState.FREE, new BigDecimal("12"), null));
+        seats.add(new Seat(null, "C", "2", "1", SeatType.TYPE_B, SeatState.FREE, new BigDecimal("12"), null));
+        seats.add(new Seat(null, "A", "3", "1", SeatType.TYPE_C, SeatState.FREE, new BigDecimal("10"), null));
+        seats.add(new Seat(null, "B", "3", "1", SeatType.TYPE_C, SeatState.FREE, new BigDecimal("10"), null));
+        seats.add(new Seat(null, "C", "3", "1", SeatType.TYPE_C, SeatState.FREE, new BigDecimal("10"), null));
+        seats.add(new Seat(null, "VIP", "1", "1", SeatType.VIP, SeatState.FREE, new BigDecimal("25"), null));
+        seats.add(new Seat(null, "VIP", "1", "2", SeatType.VIP, SeatState.FREE, new BigDecimal("25"), null));
+        seats.add(new Seat(null, "VIP", "1", "3", SeatType.VIP, SeatState.FREE, new BigDecimal("25"), null));
         return seats;
     }
 }

@@ -38,7 +38,7 @@ public class EventService {
     }
 
     public List<EventDto> getAllEvents(String dateTime, EventType type) {
-        LocalDateTime instant = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm"));
+        LocalDateTime instant = LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd.HH:mm:ss"));
         List<EventDto> eventDtos = eventRepository.findAllByDateTime(instant)
                 .stream().map(event -> {
                     return new EventDto(
