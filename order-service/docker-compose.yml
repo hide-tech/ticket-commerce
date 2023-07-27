@@ -15,7 +15,7 @@ services:
 #      - BPL_DEBUG_PORT=8001
   order-postgres:
     image: "postgres:14.4"
-    container_name: "ticket-postgres"
+    container_name: "order-postgres"
     ports:
       - 5433:5432
     environment:

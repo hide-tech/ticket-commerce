@@ -1,7 +1,7 @@
 CREATE TABLE orders (
     id BIGSERIAL PRIMARY KEY NOT NULL,
     event_id BIGINT NOT NULL,
-    seat_id NOT NULL,
+    seat_id BIGINT NOT NULL,
     event_name varchar(255) NOT NULL,
     seat_sector varchar(255) NOT NULL,
     seat_line varchar(255) NOT NULL,

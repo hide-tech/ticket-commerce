@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 
 public record OrderDto(
         Long id,
-        @NotBlank(message = "The event id must be defined.")
+        @NotNull(message = "The event id must be defined.")
         Long eventId,
-        @NotBlank(message = "The seat id must be defined.")
+        @NotNull(message = "The seat id must be defined.")
         Long seatId,
         @NotNull(message = "The event name must be defined.")
         String eventName,
@@ -22,7 +22,7 @@ public record OrderDto(
         String seatLine,
         @NotBlank(message = "The seat place must be defined.")
         String seatPlace,
-        @NotBlank(message = "The event time must be defined.")
+        @NotNull(message = "Event date and time should not be null")
         LocalDateTime eventDateTime,
         BigDecimal price,
         OrderStatus orderStatus,
