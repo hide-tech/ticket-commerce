@@ -21,3 +21,5 @@ spring:
     user: ${spring.r2dbc.username}
     password: ${spring.r2dbc.password}
     url: jdbc:postgresql://localhost:5433/order_db
+ticket:
+  ticket-service-url: "http://localhost:9001"
