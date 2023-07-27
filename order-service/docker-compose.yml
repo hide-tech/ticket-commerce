@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+#  order-service:
+#    depends_on:
+#    - order-postgres
+#    image: "ghcr.io/hide-tech/order-service:latest"
+#    container_name: "order-service"
+#    ports:
+#      - 9002:9002
+#      - 8002:8002
+#    environment:
+#      - BPL_JVM_THREAD_COUNT=50
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://order-postgres:5433/order_db
+#      - BPL_DEBUG_ENABLED=true
+#      - BPL_DEBUG_PORT=8001
+  order-postgres:
+    image: "postgres:14.4"
+    container_name: "ticket-postgres"
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=order_db
