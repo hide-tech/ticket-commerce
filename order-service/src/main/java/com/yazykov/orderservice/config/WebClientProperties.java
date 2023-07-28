@@ -10,4 +10,12 @@ public class WebClientProperties {
 
     @NotNull
     URI ticketServiceUrl;
+
+    public URI getTicketServiceUrl() {
+        return ticketServiceUrl;
+    }
+
+    public void setTicketServiceUrl(URI ticketServiceUrl) {
+        this.ticketServiceUrl = ticketServiceUrl;
+    }
 }

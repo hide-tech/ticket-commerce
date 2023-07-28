@@ -22,6 +22,12 @@ public class SeatController {
         return ResponseEntity.ok(seatService.getAllSeats(eventId));
     }
 
+    @GetMapping("/events/{eventId}/seats/{seatId}")
+    public ResponseEntity<SeatDto> getSeatById(@PathVariable("eventId") Long eventId,
+                                               @PathVariable("seatId") Long seatId) {
+        return ResponseEntity.ok(seatService.getSeatById(eventId, seatId));
+    }
+
     @PostMapping("/events/{eventId}/seats/{seatId}")
     public ResponseEntity<SeatDto> reserveSeat(@PathVariable("eventId") Long eventId,
                                                @PathVariable("seatId") Long seatId) {

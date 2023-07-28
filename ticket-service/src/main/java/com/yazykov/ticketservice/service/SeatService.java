@@ -49,6 +49,13 @@ public class SeatService {
                 .map(seatMapper::seatToSeatDto).collect(Collectors.toSet());
     }
 
+    public SeatDto getSeatById(Long eventId, Long seatId) {
+        Seat result = seatRepository.findSeatsByEventId(eventId).stream()
+                .filter(el -> Objects.equals(el.getId(), seatId)).findFirst()
+                .orElseThrow(() -> new RuntimeException(String.format("Seat with id {} not exist", seatId)));
+        return seatMapper.seatToSeatDto(result);
+    }
+
     public SeatDto reserveSeat(Long eventId, Long seatId){
         Optional<Seat> result = seatRepository.findSeatsByEventId(eventId).stream()
                 .filter(el -> Objects.equals(el.getId(), seatId)).findFirst();
