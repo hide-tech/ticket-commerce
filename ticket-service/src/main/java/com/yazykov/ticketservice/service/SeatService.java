@@ -6,6 +6,7 @@ import com.yazykov.ticketservice.model.Event;
 import com.yazykov.ticketservice.model.Seat;
 import com.yazykov.ticketservice.model.SeatState;
 import com.yazykov.ticketservice.model.SeatType;
+import com.yazykov.ticketservice.repository.EventRepository;
 import com.yazykov.ticketservice.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SeatService {
     private final SeatRepository seatRepository;
+    private final EventRepository eventRepository;
     private final SeatMapper seatMapper;
 
     public Set<Seat> initEmptySeats(Event event) {
@@ -40,29 +42,36 @@ public class SeatService {
         return seats;
     }
 
-    public Seat saveSeat(Seat seat) {
-        return seatRepository.save(seat);
+    public void saveSeat(Seat seat) {
+        seatRepository.save(seat);
     }
 
     public Set<SeatDto> getAllSeats(Long eventId) {
-        return seatRepository.findSeatsByEventId(eventId).stream()
-                .map(seatMapper::seatToSeatDto).collect(Collectors.toSet());
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event with id doesn't exist"));
+        return event.getSeats().stream().map(seatMapper::seatToSeatDto).collect(Collectors.toSet());
     }
 
     public SeatDto getSeatById(Long eventId, Long seatId) {
-        Seat result = seatRepository.findSeatsByEventId(eventId).stream()
-                .filter(el -> Objects.equals(el.getId(), seatId)).findFirst()
-                .orElseThrow(() -> new RuntimeException(String.format("Seat with id {} not exist", seatId)));
-        return seatMapper.seatToSeatDto(result);
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event with id doesn't exist"));
+        SeatDto result = event.getSeats().stream().filter(el -> Objects.equals(el.getId(), seatId)).findFirst()
+                .map(seatMapper::seatToSeatDto)
+                .orElseThrow(() -> new RuntimeException("Seat with id doesn't exist"));
+        if (!result.state().equals(SeatState.FREE))
+            throw new RuntimeException("Seat already not available");
+        return result;
     }
 
     public SeatDto reserveSeat(Long eventId, Long seatId){
-        Optional<Seat> result = seatRepository.findSeatsByEventId(eventId).stream()
-                .filter(el -> Objects.equals(el.getId(), seatId)).findFirst();
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event with id doesn't exist"));
+        Optional<Seat> result = event.getSeats().stream().filter(el -> Objects.equals(el.getId(), seatId))
+                .findFirst();
         if (result.isEmpty())
-            throw new RuntimeException(String.format("Seat with id {} not exist", seatId));
+            throw new RuntimeException(String.format("Seat with id %s not exist", seatId));
         if (!result.get().getState().equals(SeatState.FREE))
-            throw new RuntimeException(String.format("Seat with id {} not available", seatId));
+            throw new RuntimeException(String.format("Seat with id %s not available", seatId));
         Seat seat = result.get();
         seat.setState(SeatState.RESERVED);
         seat = seatRepository.save(seat);
@@ -70,12 +79,14 @@ public class SeatService {
     }
 
     public SeatDto blockSeat(Long eventId, Long seatId) {
-        Optional<Seat> result = seatRepository.findSeatsByEventId(eventId).stream()
-                .filter(el -> Objects.equals(el.getId(), seatId)).findFirst();
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event with id doesn't exist"));
+        Optional<Seat> result = event.getSeats().stream().filter(el -> Objects.equals(el.getId(), seatId))
+                .findFirst();
         if (result.isEmpty())
-            throw new RuntimeException(String.format("Seat with id {} not exist", seatId));
+            throw new RuntimeException(String.format("Seat with id %s not exist", seatId));
         if (!result.get().getState().equals(SeatState.FREE))
-            throw new RuntimeException(String.format("Seat with id {} already reserved", seatId));
+            throw new RuntimeException(String.format("Seat with id %s already reserved", seatId));
         Seat seat = result.get();
         seat.setState(SeatState.UNAVAILABLE);
         seat = seatRepository.save(seat);
@@ -83,12 +94,14 @@ public class SeatService {
     }
 
     public SeatDto returnSeat(Long eventId, Long seatId) {
-        Optional<Seat> result = seatRepository.findSeatsByEventId(eventId).stream()
-                .filter(el -> Objects.equals(el.getId(), seatId)).findFirst();
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event with id doesn't exist"));
+        Optional<Seat> result = event.getSeats().stream().filter(el -> Objects.equals(el.getId(), seatId))
+                .findFirst();
         if (result.isEmpty())
-            throw new RuntimeException(String.format("Seat with id {} not exist", seatId));
+            throw new RuntimeException(String.format("Seat with id %s not exist", seatId));
         if (!result.get().getState().equals(SeatState.RESERVED))
-            throw new RuntimeException(String.format("Seat with id {} not reserved", seatId));
+            throw new RuntimeException(String.format("Seat with id %s not reserved", seatId));
         Seat seat = result.get();
         seat.setState(SeatState.FREE);
         seat = seatRepository.save(seat);

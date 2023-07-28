@@ -41,7 +41,7 @@ public class OrderService {
     }
 
     public static Order buildAcceptedOrder(SeatDto seat, OrderDto orderDto) {
-        return Order.create(seat.eventId(), seat.id(), orderDto.eventName(), seat.sector(),
+        return Order.create(orderDto.eventId(), seat.id(), orderDto.eventName(), seat.sector(),
                 seat.line(), seat.place(), orderDto.eventDateTime(), seat.price(),
                 OrderStatus.CREATED);
     }

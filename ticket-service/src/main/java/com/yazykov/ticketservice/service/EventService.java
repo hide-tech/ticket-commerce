@@ -27,6 +27,7 @@ public class EventService {
     public List<EventDto> getAll() {
         return eventRepository.findAll().stream().map(event -> {
             return new EventDto(
+                    event.getId(),
                     event.getName(),
                     event.getType(),
                     event.getDateTime(),
@@ -42,6 +43,7 @@ public class EventService {
         List<EventDto> eventDtos = eventRepository.findAllByDateTime(instant)
                 .stream().map(event -> {
                     return new EventDto(
+                            event.getId(),
                             event.getName(),
                             event.getType(),
                             event.getDateTime(),
@@ -74,7 +76,8 @@ public class EventService {
             newEvent.setSeats(seatService.initEmptySeats(newEvent));
             return eventRepository.save(newEvent);
         });
-        return new EventDto(updatedEvent.getName(),
+        return new EventDto(updatedEvent.getId(),
+                updatedEvent.getName(),
                 updatedEvent.getType(),
                 updatedEvent.getDateTime(),
                 updatedEvent.getSeats().stream().map(seatMapper::seatToSeatDto).collect(Collectors.toSet()),
@@ -86,7 +89,8 @@ public class EventService {
         var newEvent = new Event(eventDto);
         newEvent.setSeats(seatService.initEmptySeats(newEvent));
         Event save = eventRepository.save(newEvent);
-        return new EventDto(save.getName(),
+        return new EventDto(save.getId(),
+                save.getName(),
                 save.getType(),
                 save.getDateTime(),
                 save.getSeats().stream().map(seatMapper::seatToSeatDto).collect(Collectors.toSet()),

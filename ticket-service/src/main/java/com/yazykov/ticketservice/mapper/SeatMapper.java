@@ -14,8 +14,7 @@ public class SeatMapper {
                 seat.getPlace(),
                 seat.getType(),
                 seat.getState(),
-                seat.getPrice(),
-                null
+                seat.getPrice()
         );
     }
 }

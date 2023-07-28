@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 public record EventDto(
+        Long id,
         @NotBlank(message = "Name of event should not be blank")
         String name,
         @NotBlank(message = "Type of event must be defined")

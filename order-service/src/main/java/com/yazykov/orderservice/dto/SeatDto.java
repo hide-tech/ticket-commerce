@@ -12,7 +12,6 @@ public record SeatDto (
         String place,
         SeatType type,
         SeatState state,
-        BigDecimal price,
-        Long eventId
+        BigDecimal price
 ) {
 }
