@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+#  edge-service:
+#    depends_on:
+#    - store-redis
+#    image: "ghcr.io/hide-tech/edge-service:latest"
+#    container_name: "edge-service"
+#    ports:
+#      - 9000:9000
+
+  store-redis:
+    image: "redis:7.0"
+    container_name: "store-redis"
+    ports:
+      - 6379:6379

@@ -5,6 +5,16 @@ server:
     idle-timeout: 15s
   shutdown: graceful
 spring:
+  session:
+    store-type: redis
+    timeout: 10m
+    redis:
+      namespace: store:edge
+  redis:
+    connect-timeout: 2s
+    host: localhost
+    port: 6379
+    timeout: 1s
   application:
     name: edge-service
   lifecycle:
@@ -16,10 +26,20 @@ spring:
           uri: ${TICKET_SERVICE_URL:http://localhost:9001}/events
           predicates:
             - Path=/events/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ticketCircuitBreaker
+                fallbackUri: forward:/ticket-fallback
         - id: order-route
           uri: ${ORDER_SERVICE_URL:http://localhost:9002}/orders
           predicates:
             - Path=/orders/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: orderCircuitBreaker
+                fallbackUri: forward:/order-fallback
       httpclient:
         connect-timeout: 2000
         response-timeout: 5s
@@ -39,3 +59,22 @@ spring:
               maxBackOff: 500ms
               factor: 2
               basedOnPreviousValue: false
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter:
+              replenishRate: 10
+              burstCapacity: 20
+              requestedTokens: 1
+        - SaveSession
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 20
+        permittedNumberOfCallsInHalfOpenState: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 15000
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 5s
