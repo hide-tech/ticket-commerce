@@ -4,11 +4,11 @@ spring:
     password: password
     url: jdbc:postgresql://localhost:5432/ticket_db
     hikari:
-    connection-timeout: 2000
-    maximum-pool-size: 5
+      connection-timeout: 2000
+      maximum-pool-size: 5
+  application:
+    name: ticket-service
 server:
   port: 9001
-application:
-  name: ticket-service
 ticket:
   greeting: Hello on our new ticket service!
