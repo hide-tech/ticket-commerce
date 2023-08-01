@@ -1,0 +1,21 @@
+server:
+  port: 9003
+spring:
+  application:
+    name: dispatch-service
+  cloud:
+    function:
+      definition: prepare|dispatch
+    stream:
+      bindings:
+        preparedispatch-in-0:
+          destination: order-accepted
+          group: ${spring.application.name}
+        preparedispatch-out-0:
+          destination: order-dispatched
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: password
+    connection-timeout: 5s
