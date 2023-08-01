@@ -1,11 +1,14 @@
 package com.yazykov.ticketservice.service;
 
 import com.yazykov.ticketservice.dto.EventDto;
+import com.yazykov.ticketservice.dto.OrderAcceptedDto;
 import com.yazykov.ticketservice.mapper.SeatMapper;
 import com.yazykov.ticketservice.model.Event;
 import com.yazykov.ticketservice.model.EventType;
+import com.yazykov.ticketservice.model.Seat;
 import com.yazykov.ticketservice.model.SeatState;
 import com.yazykov.ticketservice.repository.EventRepository;
+import com.yazykov.ticketservice.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,7 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final SeatService seatService;
+    private final SeatRepository seatRepository;
     private final SeatMapper seatMapper;
 
     public List<EventDto> getAll() {
@@ -105,5 +109,14 @@ public class EventService {
                     seatService.saveSeat(el);
                 });
         eventRepository.deleteById(id);
+    }
+
+    public void processReserveSeat(OrderAcceptedDto event) {
+        Seat result = eventRepository.findById(event.eventId())
+                .orElseThrow(() -> new RuntimeException("Event doesn't exist"))
+                .getSeats().stream().filter(seat -> Objects.equals(seat.getId(), event.seatId()))
+                .findFirst().orElseThrow(() -> new RuntimeException("Seat doesn't exist"));
+        result.setState(SeatState.RESERVED);
+        seatRepository.save(result);
     }
 }

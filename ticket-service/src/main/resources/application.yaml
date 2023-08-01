@@ -8,6 +8,12 @@ spring:
       maximum-pool-size: 5
   application:
     name: ticket-service
+  cloud:
+    stream:
+      bindings:
+        reserveOrder-in-0:
+          destination: seat-reserved
+          group: { spring.application.name }
 server:
   port: 9001
 ticket:
