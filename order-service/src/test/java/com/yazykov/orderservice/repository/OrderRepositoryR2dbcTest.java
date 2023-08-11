@@ -62,7 +62,7 @@ class OrderRepositoryR2dbcTest {
     @Test
     void createAcceptedOrder() {
         var orderDto = new OrderDto(null, 14L, 17L, "Concert Nero", "VIP", "2", "5", LocalDateTime.now(), new BigDecimal("15.50"), null, null, null);
-        var seatDto = new SeatDto(17L, "VIP", "2", "5", SeatType.VIP, SeatState.FREE, new BigDecimal("15.50"), 14L);
+        var seatDto = new SeatDto(17L, "VIP", "2", "5", SeatType.VIP, SeatState.FREE, new BigDecimal("15.50"));
         var faultOrder = OrderService.buildAcceptedOrder(seatDto, orderDto);
         StepVerifier
                 .create(orderRepository.save(faultOrder))

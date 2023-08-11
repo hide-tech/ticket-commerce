@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.annotation.Version;
+import org.springframework.data.annotation.*;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
@@ -40,6 +37,10 @@ public class Event {
     @CreatedDate
     @Column("created_date")
     private Instant createdDate;
+    @CreatedBy
+    private String createdBy;
+    @LastModifiedBy
+    private String lastModifiedBy;
     @LastModifiedDate
     @Column("last_modified_date")
     private Instant lastModifiedDate;

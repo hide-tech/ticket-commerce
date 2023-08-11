@@ -29,8 +29,8 @@ public class OrderService {
         this.streamBridge = streamBridge;
     }
 
-    public Flux<OrderDto> getAllOrders() {
-        return orderRepository.findAll().map(order -> {
+    public Flux<OrderDto> getAllOrders(String userId) {
+        return orderRepository.findAllByCreatedBy(userId).map(order -> {
             return new OrderDto(order.id(), order.eventId(), order.seatId(), order.eventName(), order.seatSector(),
                     order.seatLine(), order.seatPlace(), order.eventDateTime(), order.price(), order.orderStatus(),
                     order.createdDate(), order.lastModifiedDate());
@@ -85,7 +85,7 @@ public class OrderService {
                 existOrder.id(), existOrder.eventId(), existOrder.seatId(), existOrder.eventName(),
                 existOrder.seatSector(), existOrder.seatLine(), existOrder.seatPlace(), existOrder.eventDateTime(),
                 existOrder.price(), OrderStatus.DELIVERED, existOrder.createdDate(), existOrder.lastModifiedDate(),
-                existOrder.version()
+                existOrder.version(), existOrder.createdBy(), null
         );
     }
 

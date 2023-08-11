@@ -23,7 +23,7 @@ class TicketServiceApplicationTests {
     void createNewEventAndGetThisEventByDateTime() {
         LocalDateTime dateTime = LocalDateTime.of(2023, 5, 12, 17, 30);
         String instant = "2023-05-12.17:30:00";
-        EventDto eventDto = new EventDto("New concert", EventType.CONCERT, dateTime, null, null, null);
+        EventDto eventDto = EventDto.of("New concert", EventType.CONCERT, dateTime, null);
         EventDto expectedEvent = webTestClient
                 .post()
                 .uri("/events")

@@ -72,6 +72,8 @@ public class EventService {
                     existingEvent.getSeats(),
                     existingEvent.getVersion(),
                     existingEvent.getCreatedDate(),
+                    null,
+                    null,
                     Instant.now()
             );
             return eventRepository.save(eventToUpdate);

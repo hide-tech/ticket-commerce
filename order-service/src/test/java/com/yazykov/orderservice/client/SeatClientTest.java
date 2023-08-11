@@ -56,7 +56,7 @@ class SeatClientTest {
         Mono<SeatDto> seatDtoMono = seatClient.getSeatByIdAndEventId(seatId, eventId);
 
         StepVerifier.create(seatDtoMono)
-                .expectNextMatches(s -> s.eventId().equals(eventId))
+                .expectNextMatches(s -> s.line().equals("4"))
                 .verifyComplete();
     }
 }

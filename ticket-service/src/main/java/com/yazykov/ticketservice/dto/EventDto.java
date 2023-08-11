@@ -2,11 +2,6 @@ package com.yazykov.ticketservice.dto;
 
 import com.yazykov.ticketservice.model.EventType;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -23,4 +18,7 @@ public record EventDto(
         Set<SeatDto> seats,
         Instant createdDate,
         Instant lastModifiedDate) {
+        public static EventDto of(String name, EventType type, LocalDateTime dateTime, Set<SeatDto> seats) {
+                return new EventDto(null, name, type, dateTime, seats, null, null);
+        }
 }
