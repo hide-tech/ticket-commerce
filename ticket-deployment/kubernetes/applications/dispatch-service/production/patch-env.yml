@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dispatch-service
+spec:
+  template:
+    spec:
+      containers:
+        - name: dispatch-service
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod

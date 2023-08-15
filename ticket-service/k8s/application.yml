@@ -1,0 +1,10 @@
+ticket:
+  greeting: Welcome to the book catalog from a development Kubernetes environment!
+spring:
+  datasource:
+    url: jdbc:postgresql://ticket-postgres/ticket_db
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://ticket-keycloak/realms/TicketCommerce

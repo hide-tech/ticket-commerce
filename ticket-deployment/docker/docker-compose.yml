@@ -1,0 +1,205 @@
+version: "3.8"
+services:
+
+  ticket-service:
+    depends_on:
+    - ticket-postgres
+    - fluent-bit
+    - keycloak-service
+    - tempo
+    - store-rabbitmq
+    image: "ghcr.io/hide-tech/ticket-service:latest"
+    container_name: "ticket-service"
+    ports:
+      - 9001:9001
+      - 8001:8001
+    environment:
+      - BPL_JVM_THREAD_COUNT=50
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ticket-postgres:5432/ticket_db
+      - BPL_DEBUG_ENABLED=true
+      - BPL_DEBUG_PORT=8001
+      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.17.0.jar
+      - OTEL_SERVICE_NAME=ticket-service
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
+      - OTEL_METRICS_EXPORTER=none
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://host.docker.internal:8080/realms/TicketCommerce
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
+      
+  order-service:
+    depends_on:
+    - order-postgres
+    - store-rabbitmq
+    - fluent-bit
+    - keycloak-service
+    - tempo
+    image: "ghcr.io/hide-tech/order-service:latest"
+    container_name: "order-service"
+    ports:
+      - 9002:9002
+      - 8002:8002
+    environment:
+      - BPL_DEBUG_ENABLED=true
+      - BPL_DEBUG_PORT=8002
+      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.17.0.jar
+      - OTEL_SERVICE_NAME=order-service
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
+      - OTEL_METRICS_EXPORTER=none
+      - TICKET_TICKET_SERVICE_URI=http://ticket-service:9001
+      - SPRING_R2DBC_URL=r2dbc:postgresql://order-postgres:5432/order_db
+      - SPRING_FLYWAY_URL=jdbc:postgresql://order-postgres:5433/order_db
+      - SPRING_RABBITMQ_HOST=store-rabbitmq
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://host.docker.internal:8080/realms/TicketCommerce
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
+   
+  dispatch-service:
+    depends_on:
+      - store-rabbitmq
+      - fluent-bit
+    image: "ghcr.io/hide-tech/dispatch-service:latest"
+    container_name: "dispatch-service"
+    ports:
+      - 9003:9003
+      - 8003:8003
+    environment:
+      - BPL_DEBUG_ENABLED=true
+      - BPL_DEBUG_PORT=8003
+      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.17.0.jar
+      - OTEL_SERVICE_NAME=dispatch-service
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
+      - OTEL_METRICS_EXPORTER=none
+      - SPRING_RABBITMQ_HOST=polar-rabbitmq
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
+      
+  edge-service:
+    depends_on:
+    - store-redis
+    - fluent-bit
+    - keycloak-service
+    image: "ghcr.io/hide-tech/edge-service:latest"
+    container_name: "edge-service"
+    ports:
+      - 9000:9000
+      - 8000:8000
+    environment:
+      - BPL_DEBUG_ENABLED=true
+      - BPL_DEBUG_PORT=8000
+      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.17.0.jar
+      - OTEL_SERVICE_NAME=edge-service
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
+      - OTEL_METRICS_EXPORTER=none
+      - CATALOG_SERVICE_URL=http://ticket-service:9001
+      - ORDER_SERVICE_URL=http://order-service:9002
+      - SPRING_REDIS_HOST=store-redis
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://host.docker.internal:8080/realms/TicketCommerce
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 127.0.0.1:24224
+   
+  ticket-postgres:
+    image: "postgres:14.4"
+    container_name: "ticket-postgres"
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=ticket_db
+  
+  order-postgres:
+    image: "postgres:14.4"
+    container_name: "order-postgres"
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=order_db
+   
+  store-rabbitmq:
+    image: rabbitmq:3.10-management
+    container_name: store-rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      
+  store-redis:
+    image: "redis:7.0"
+    container_name: "store-redis"
+    ports:
+      - 6379:6379
+
+  keycloak-service:
+    image: quay.io/keycloak/keycloak:19.0
+    container_name: "keycloak-service"
+    command: start-dev --import-realm
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import
+    environment:
+      - KEYCLOAK_ADMIN=user
+      - KEYCLOAK_ADMIN_PASSWORD=password
+    ports:
+      - 8080:8080
+
+  grafana:
+    image: grafana/grafana:9.1.2
+    container_name: grafana
+    depends_on:
+      - loki
+      - prometheus
+      - tempo
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=user
+      - GF_SECURITY_ADMIN_PASSWORD=password
+    volumes:
+      - ./observability/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ./observability/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./observability/grafana/grafana.ini:/etc/grafana/grafana.ini
+
+  loki:
+    image: grafana/loki:2.6.1
+    container_name: loki
+    depends_on:
+      - fluent-bit
+    ports:
+      - "3100:3100"
+
+  fluent-bit:
+    image: grafana/fluent-bit-plugin-loki:2.6.1-amd64
+    container_name: fluent-bit
+    ports:
+      - "24224:24224"
+    environment:
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
+    volumes:
+      - ./observability/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+
+  prometheus:
+    image: prom/prometheus:v2.38.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  tempo:
+    image: grafana/tempo:1.5.0
+    container_name: tempo
+    command: -config.file /etc/tempo-config.yml
+    ports:
+      - "4317:4317"
+    volumes:
+      - ./observability/tempo/tempo.yml:/etc/tempo-config.yml

@@ -1,5 +1,18 @@
 version: "3.8"
 services:
+
+#  dispatch-service:
+#    depends_on:
+#      - store-rabbitmq
+#    image: "ghcr.io/hide-tech/dispatch-service:latest"
+#    container_name: "dispatch-service"
+#    ports:
+#      - 9003:9003
+#      - 8003:8003
+#    environment:
+#      - BPL_DEBUG_ENABLED=true
+#      - BPL_DEBUG_PORT=8003
+
   store-rabbitmq:
     image: rabbitmq:3.10-management
     container_name: store-rabbitmq

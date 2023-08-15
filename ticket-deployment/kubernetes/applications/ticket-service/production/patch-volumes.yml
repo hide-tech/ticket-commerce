@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ticket-service
+spec:
+  template:
+    spec:
+      containers:
+        - name: ticket-service
+          volumeMounts:
+            - name: postgres-credentials-volume-ticket
+              mountPath: /workspace/secrets/postgres/ticket
+            - name: rabbitmq-credentials-volume
+              mountPath: /workspace/secrets/rabbitmq
+            - name: keycloak-issuer-resourceserver-secret-volume
+              mountPath: /workspace/secrets/keycloak
+      volumes:
+        - name: postgres-credentials-volume-ticket
+          secret:
+            secretName: store-postgres-ticket-credentials
+        - name: rabbitmq-credentials-volume
+          secret:
+            secretName: store-rabbitmq-credentials
+        - name: keycloak-issuer-resourceserver-secret-volume
+          secret:
+            secretName: keycloak-issuer-resourceserver-secret
