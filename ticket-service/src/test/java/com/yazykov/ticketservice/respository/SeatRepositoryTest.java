@@ -41,15 +41,15 @@ public class SeatRepositoryTest {
     }
 
     private void initEvents() {
-        Event event1 = new Event(null, "Red History", EventType.CONCERT, LocalDateTime.of(2020, 10, 10, 5, 50), null, 5, Instant.now(), Instant.now());
+        Event event1 = new Event(null, "Red History", EventType.CONCERT, LocalDateTime.of(2020, 10, 10, 5, 50), null, 5, Instant.now(), null, null, Instant.now());
         Set<Seat> seats1 = initSeats();
         seats1.forEach(el -> el.setEvent(event1));
         event1.setSeats(seats1);
-        Event event2 = new Event(null, "Roy Jefferson's show", EventType.SHOW, LocalDateTime.of(2020, 10, 11, 5, 50), null, 3, Instant.now(), Instant.now());
+        Event event2 = new Event(null, "Roy Jefferson's show", EventType.SHOW, LocalDateTime.of(2020, 10, 11, 5, 50), null, 3, Instant.now(), null, null, Instant.now());
         Set<Seat> seats2 = initSeats();
         seats2.forEach(el -> el.setEvent(event2));
         event2.setSeats(seats2);
-        Event event3 = new Event(null, "Football match", EventType.SPORT_EVENT, LocalDateTime.of(2020, 10, 12, 5, 50), null, 1, Instant.now(), Instant.now());
+        Event event3 = new Event(null, "Football match", EventType.SPORT_EVENT, LocalDateTime.of(2020, 10, 12, 5, 50), null, 1, Instant.now(), null, null, Instant.now());
         Set<Seat> seats3 = initSeats();
         seats3.forEach(el -> el.setEvent(event3));
         event3.setSeats(seats3);

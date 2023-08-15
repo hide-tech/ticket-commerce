@@ -4,6 +4,7 @@ server:
     connection-timeout: 2s
     idle-timeout: 15s
   shutdown: graceful
+
 spring:
   security:
     oauth2:
@@ -78,6 +79,7 @@ spring:
               requestedTokens: 1
         - SaveSession
         - TokenRelay
+
 resilience4j:
   circuitbreaker:
     configs:
@@ -90,3 +92,39 @@ resilience4j:
     configs:
       default:
         timeoutDuration: 5s
+
+logging:
+  group:
+    circuitbreaker: io.github.resilience4j, org.springframework.cloud.circuitbreaker
+  level:
+    circuitbreaker: info
+  pattern:
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+
+info:
+  system: Ticket-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: env, configprops, gateway, health, heapdump, info, loggers, mappings, prometheus
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,redis
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
